@@ -34,7 +34,9 @@ export PATH=${JAVA_HOME}/bin:$PATH
 source ~/.bashrc
 ```
 
-[neo4j(3.5.2)]: https://go.neo4j.com/download-thanks.html?edition=community&amp;release=3.5.2&amp;flavour=unix&amp;_ga=2.216143190.1335352046.1548317037-342533476.1547192045
+Neo4j 下载：[https://go.neo4j.com/download-thanks.html?edition=community&amp;release=3.5.2&amp;flavour=unix&amp;_ga=2.216143190.1335352046.1548317037-342533476.1547192045](https://go.neo4j.com/download-thanks.html?edition=community&amp;release=3.5.2&amp;flavour=unix&amp;_ga=2.216143190.1335352046.1548317037-342533476.1547192045) 
+
+解压缩即可。
 
 启动neo4j
 
