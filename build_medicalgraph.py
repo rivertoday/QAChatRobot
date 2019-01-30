@@ -73,7 +73,7 @@ class MedicalGraph:
         for data in open(self.data_path):
             disease_dict = {}
             count += 1
-            print(count)
+            #print(count)
             data_json = json.loads(data)
             disease = data_json['name']
             disease_dict['name'] = disease
@@ -182,16 +182,26 @@ class MedicalGraph:
 
     '''建立节点'''
     def create_node(self, label, nodes):
+        strcql = "create constraint on (nd:%s) assert nd.name is unique" % (label)
+        try:
+            self.g.run(strcql)
+        except Exception as e:
+            print(e)
         count = 0
         for node_name in nodes:
             node = Node(label, name=node_name)
             self.g.create(node)
             count += 1
-            print(count, len(nodes))
+            #print(count, len(nodes))
         return
 
     '''创建知识图谱中心疾病的节点'''
     def create_diseases_nodes(self, disease_infos):
+        strcql = "create constraint on (nd:Disease) assert nd.name is unique"
+        try:
+            self.g.run(strcql)
+        except Exception as e:
+            print(e)
         count = 0
         for disease_dict in disease_infos:
             node = Node("Disease", name=disease_dict['name'], desc=disease_dict['desc'],
@@ -201,7 +211,7 @@ class MedicalGraph:
                         ,cure_way=disease_dict['cure_way'] , cured_prob=disease_dict['cured_prob'])
             self.g.create(node)
             count += 1
-            print(count)
+            #print(count)
         return
 
     '''创建知识图谱实体节点类型schema'''
@@ -209,15 +219,15 @@ class MedicalGraph:
         Drugs, Foods, Checks, Departments, Producers, Symptoms, Diseases, disease_infos,rels_check, rels_recommandeat, rels_noteat, rels_doeat, rels_department, rels_commonddrug, rels_drug_producer, rels_recommanddrug,rels_symptom, rels_acompany, rels_category = self.read_nodes()
         self.create_diseases_nodes(disease_infos)
         self.create_node('Drug', Drugs)
-        print(len(Drugs))
+        #print(len(Drugs))
         self.create_node('Food', Foods)
-        print(len(Foods))
+        #print(len(Foods))
         self.create_node('Check', Checks)
-        print(len(Checks))
+        #print(len(Checks))
         self.create_node('Department', Departments)
-        print(len(Departments))
+        #print(len(Departments))
         self.create_node('Producer', Producers)
-        print(len(Producers))
+        #print(len(Producers))
         self.create_node('Symptom', Symptoms)
         return
 
@@ -254,7 +264,7 @@ class MedicalGraph:
             try:
                 self.g.run(query)
                 count += 1
-                print(rel_type, count, all)
+                #print(rel_type, count, all)
             except Exception as e:
                 print(e)
         return
@@ -299,43 +309,51 @@ class MedicalGraph:
 
     def generate_Drug_Food(self):
         self.create_node('Drug', self.Drugs)
-        print(len(self.Drugs))
+        print(">>>Length of Drugs: %d"%(len(self.Drugs)))
         self.create_node('Food', self.Foods)
-        print(len(self.Foods))
+       	print(">>>Length of Foods: %d"%(len(self.Foods)))
         return
 
     def generate_Check_Departments(self):
         self.create_node('Check', self.Checks)
-        print(len(self.Checks))
+        print(">>>Length of Checks: %d"%(len(self.Checks)))
         self.create_node('Department', self.Departments)
-        print(len(self.Departments))
+        print(">>>Length of Departments: %d"%(len(self.Departments)))
         return
 
     def generate_Producers_Symptoms(self):
         self.create_node('Producer', self.Producers)
-        print(len(self.Producers))
+        print(">>>Length of Producers: %d"%(len(self.Producers)))
         self.create_node('Symptom', self.Symptoms)
-        print(len(self.Symptoms))
+        print(">>>Length of Symptoms: %d"%(len(self.Symptoms)))
         return
 
     def generate_rel_Disease_Food(self):
         self.create_relationship('Disease', 'Food', self.rels_recommandeat, 'recommand_eat', '推荐食谱')
         self.create_relationship('Disease', 'Food', self.rels_noteat, 'no_eat', '忌吃')
         self.create_relationship('Disease', 'Food', self.rels_doeat, 'do_eat', '宜吃')
+        print(">>>Finished creating relationship between Disease and Food")
         return
 
     def generate_rel_Disease_Drug(self):
         self.create_relationship('Department', 'Department', self.rels_department, 'belongs_to', '属于')
+        print(">>>Finished creating relationship between Department and Department")
         self.create_relationship('Disease', 'Drug', self.rels_commonddrug, 'common_drug', '常用药品')
-        self.create_relationship('Producer', 'Drug', self.rels_drug_producer, 'drugs_of', '生产药品')
         self.create_relationship('Disease', 'Drug', self.rels_recommanddrug, 'recommand_drug', '好评药品')
+        print(">>>Finished creating relationship between Disease and Drug")
+        self.create_relationship('Producer', 'Drug', self.rels_drug_producer, 'drugs_of', '生产药品')
+        print(">>>Finished creating relationship between Producer and Drug")
         return
 
     def generate_rel_Disease_Others(self):
         self.create_relationship('Disease', 'Check', self.rels_check, 'need_check', '诊断检查')
+        print(">>>Finished creating relationship between Disease and Check")
         self.create_relationship('Disease', 'Symptom', self.rels_symptom, 'has_symptom', '症状')
+        print(">>>Finished creating relationship between Disease and Symptom")
         self.create_relationship('Disease', 'Disease', self.rels_acompany, 'acompany_with', '并发症')
+        print(">>>Finished creating relationship between Disease and Disease")
         self.create_relationship('Disease', 'Department', self.rels_category, 'belongs_to', '所属科室')
+        print(">>>Finished creating relationship between Disease and Department")
         return
 
 if __name__ == '__main__':
